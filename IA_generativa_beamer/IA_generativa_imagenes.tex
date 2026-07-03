@@ -1,0 +1,539 @@
+\documentclass[aspectratio=169]{beamer}
+
+% ---------- Paquetes ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=blue,      
+    urlcolor=blue,
+    citecolor=blue,
+}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{array}
+\usepackage{pifont}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta}
+\usepackage{xcolor}
+
+% ---------- Paleta institucional ----------
+\definecolor{grispizarra}{HTML}{465055}   % Color institucional dominante: barras, paneles, encabezados
+\definecolor{moradojalisco}{HTML}{6B2182} % Fondos de portada y separadores de sección
+\definecolor{naranjajalisco}{HTML}{FF8300}% Branding exclusivo: escudos, íconos, comillas decorativas
+\definecolor{grisclaro}{HTML}{F3F3F3}     % Fondo principal de slides de contenido
+\definecolor{grisperla}{HTML}{EEF2F3}     % Variante de fondo en slides especiales
+
+% ---------- Tema ----------
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% ---- Aplicación de la paleta institucional al tema Madrid ----
+\setbeamercolor{palette primary}{bg=grispizarra,fg=white}
+\setbeamercolor{palette secondary}{bg=moradojalisco,fg=white}
+\setbeamercolor{palette tertiary}{bg=grispizarra,fg=white}
+\setbeamercolor{palette quaternary}{bg=moradojalisco,fg=white}
+\setbeamercolor{structure}{fg=moradojalisco}
+\setbeamercolor{title}{fg=white,bg=moradojalisco}
+\setbeamercolor{frametitle}{bg=grispizarra,fg=white}
+\setbeamercolor{section in head/foot}{bg=moradojalisco,fg=white}
+\setbeamercolor{author in head/foot}{bg=grispizarra,fg=white}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{block title}{bg=naranjajalisco,fg=black}
+\setbeamercolor{block body}{bg=grisperla,fg=black}
+
+% ---------- Datos ----------
+\title{IA generativa para imágenes}
+\author{Dr. Ulises Moya}
+\institute{mexIA 2026}
+\date{}
+\logo{\includegraphics[height=0.8cm]{final_images/iieg_logo.png}}
+
+\newcommand{\slideimg}[1]{%
+  \begin{center}
+    \includegraphics[width=0.95\paperwidth,height=0.78\paperheight,keepaspectratio]{final_images/#1}
+  \end{center}
+}
+\newcommand{\slidelink}[1]{%
+  \begin{center}
+    \small \url{#1}
+  \end{center}
+}
+
+% Dibuja un "bote" cilíndrico en (x,y)=#1,#2 con radio #3 y altura #4
+\newcommand{\Cylinder}[4]{%
+  \pgfmathsetmacro{\cylry}{0.3*#3}
+  \begin{scope}[shift={(#1,#2)}]
+    \draw[fill=gray!35,draw=black,line width=0.6pt]
+      (0,#4) ellipse (#3 and \cylry);
+    \draw[fill=gray!65,draw=black,line width=0.6pt]
+      (-#3,0) -- (-#3,#4)
+      arc (180:360:#3 and \cylry)
+      -- (#3,0)
+      arc (0:-180:#3 and \cylry)
+      -- cycle;
+  \end{scope}
+}
+
+% ---- Iconos para el diagrama "Classic AI vs Generative AI" (slide 11) ----
+% Foco / idea de negocio, centrado en (x,y)=#1,#2
+\newcommand{\Bulb}[2]{%
+  \begin{scope}[shift={(#1,#2)}]
+    \draw (0,0) circle (0.35);
+    \draw (-0.12,-0.35) -- (0.12,-0.35);
+    \draw (-0.1,-0.45) rectangle (0.1,-0.35);
+    \draw (-0.1,-0.53) -- (0.1,-0.53);
+    \draw (-0.08,-0.6) -- (0.08,-0.6);
+  \end{scope}
+}
+% Documento (datos etiquetados), centrado en (x,y)=#1,#2
+\newcommand{\Doc}[2]{%
+  \begin{scope}[shift={(#1,#2)}]
+    \draw[fill=white] (-0.4,-0.5) rectangle (0.4,0.5);
+    \draw[fill=white] (0.15,0.5) -- (0.4,0.25) -- (0.15,0.25) -- cycle;
+    \draw (-0.25,0.05) -- (0.15,0.05);
+    \draw (-0.25,-0.1) -- (0.25,-0.1);
+    \draw (-0.25,-0.25) -- (0.1,-0.25);
+  \end{scope}
+}
+% Modelo (hexágono tipo "cerebro/circuito"), centrado en (x,y)=#1,#2
+\newcommand{\Brain}[2]{%
+  \begin{scope}[shift={(#1,#2)}]
+    \node[regular polygon, regular polygon sides=6, draw=blue!55!black,
+          fill=blue!25, minimum size=1.15cm, inner sep=0] at (0,0) {};
+    \draw[blue!60!black] (-0.28,0.18) -- (0,0.18) -- (0,-0.05) -- (0.28,-0.05);
+    \draw[blue!60!black] (-0.15,-0.22) -- (0.15,-0.22);
+    \draw[blue!60!black] (0.12,0.22) -- (0.12,0.05);
+  \end{scope}
+}
+% Deploy / uso (par de flechas), centrado en (x,y)=#1,#2
+\newcommand{\DeployIcon}[2]{%
+  \begin{scope}[shift={(#1,#2)}]
+    \draw[blue!60!black, line width=1.4pt] (-0.42,0.3) -- (-0.06,0) -- (-0.42,-0.3);
+    \draw[blue!60!black, line width=1.4pt] (0.42,0.3) -- (0.06,0) -- (0.42,-0.3);
+  \end{scope}
+}
+
+\begin{document}
+
+% ================= Slide 1 =================
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ================= Slide 2 =================
+\begin{frame}{Agenda}
+  \begin{itemize}
+    \item Se puede crear con la IA
+    \item IA Generativa
+    \item IA generativa en imágenes (Antecedentes)
+    \item Herramientas
+    \item Casos especiales
+    \item Errores, ataques y desempeño
+    \item Conclusiones
+  \end{itemize}
+\end{frame}
+
+% ================= Sección: Se puede crear con la IA =================
+\section{¿Se puede crear con la IA?}
+
+% ---- Slide 3 ----
+\begin{frame}{}
+  \centering
+  \Large ¿Se puede crear algo nuevo con la IA?
+\end{frame}
+
+% ---- Slide 4 ----
+\begin{frame}{}
+  \centering
+  \Large ¿Qué tiene que aprender para generar una imagen?
+
+  \vspace{0.5cm}
+  \begin{center}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    % Fila superior
+    \Cylinder{0}{2.6}{0.42}{2.3}
+    \Cylinder{2.3}{2.6}{0.5}{1.9}
+    \Cylinder{4.6}{2.6}{0.75}{0.75}
+    \Cylinder{6.9}{2.6}{0.85}{2.1}
+    \Cylinder{9.2}{2.6}{0.28}{0.75}
+    % Fila inferior
+    \Cylinder{0}{0}{0.65}{1.35}
+    \Cylinder{2.3}{0}{0.9}{1.9}
+    \Cylinder{4.6}{0}{0.28}{1.6}
+    \Cylinder{6.9}{0}{0.6}{1.05}
+    \Cylinder{9.2}{0}{0.9}{0.75}
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% ---- Slide 5 (imagen: diagrama cilindro r,z) ----
+\begin{frame}[plain]
+  \slideimg{slide-05.png}
+\end{frame}
+
+% ---- Slide 6 (imagen: referencia) ----
+\begin{frame}[plain]
+  \slideimg{slide-06.png}
+  \slidelink{https://raw.githubusercontent.com/erodola/DLAI-s2-2020/master/11_generative/11-generative.pdf}
+\end{frame}
+
+% ================= Sección: IA Generativa =================
+\section{IA Generativa}
+
+% ---- Slide 7 ----
+\begin{frame}{}
+  \centering
+  \Large IA generativa
+\end{frame}
+
+% ---- Slide 8 (imagen: diagrama IA/ML/DL/GenAI) ----
+\begin{frame}[plain]
+  \slideimg{slide-08.png}
+\end{frame}
+
+% ---- Slide 9 ----
+\begin{frame}{Modelos Generativos}
+  De manera informal:
+  \begin{itemize}
+    \item Los modelos generativos (MG) buscan ``crear'' nuevos elementos/contenido de un conjunto de datos similares a los que se entrenaron.
+    \item MG pretende simular cómo se generan los datos en el mundo real.
+  \end{itemize}
+
+  Más formal: Dado un conjunto de datos $X$ y unas etiquetas $Y$
+  \begin{itemize}
+    \item Los MG buscan aproximar la probabilidad $P(X,Y)$ o, en algunos casos, $P(X)$.
+  \end{itemize}
+
+  ¿Qué buscan aprender?
+
+  Dada la distribución de $X$ como $P_{data}$ y la distribución de un modelo $P_{model}$:
+  \[
+    \min\; d(P_{data}, P_{model})
+  \]
+\end{frame}
+
+% ---- Slide 10 (imagen: diagrama de flujo train/sampling) ----
+\begin{frame}[plain]
+  \slideimg{slide-10.png}
+\end{frame}
+
+% ---- Slide 11 (Classic AI vs Generative AI, dibujado con TikZ) ----
+\begin{frame}[plain]
+  \begin{center}
+  \resizebox{!}{0.8\paperheight}{%
+  \begin{tikzpicture}[>=Stealth, thick]
+    % ===== Classic AI =====
+    \node[font=\bfseries\Large] at (7.6,8.1) {Classic AI};
+
+    \Bulb{1.3}{7}
+    \node[align=center, font=\small] at (1.3,5.9) {Business Idea\\For Use Case};
+
+    \draw[->] (1.9,7) -- (4.9,7);
+
+    \Doc{5.5}{7}
+    \node[align=center, font=\small] at (5.5,6) {Collect\\labelled data};
+
+    \draw[->] (6.1,7) -- (9.1,7);
+
+    \Brain{9.7}{7}
+    \node[align=center, font=\small] at (9.7,6) {Train/Tune\\Model};
+
+    \draw[->] (10.4,7) -- (13.3,7);
+
+    \DeployIcon{13.9}{7}
+    \node[align=center, font=\small] at (13.9,6) {Deploy \&\\Use};
+
+    % ===== Generative AI =====
+    \node[font=\bfseries\Large] at (7.6,4.3) {Generative AI};
+
+    \Bulb{1.3}{3.3}
+    \node[align=center, font=\small] at (1.3,2.2) {Business Idea\\For Use Case};
+
+    \Bulb{1.3}{1.3}
+    \node[align=center, font=\small] at (1.3,0.15) {Another\\Business Idea\\For Use Case};
+
+    \draw (1.9,3.3) -- (5.5,3.3) -- (5.5,2.3);
+    \draw (1.9,1.3) -- (5.5,1.3) -- (5.5,2.3);
+    \draw[->] (5.5,2.3) -- (13.4,2.3);
+
+    \node[font=\bfseries\Large, blue!60!black] at (13.9,2.3) {API};
+    \node[align=center, font=\small] at (13.9,1.5) {LLM API};
+  \end{tikzpicture}
+  }
+  \end{center}
+\end{frame}
+
+% ---- Slide 12 ----
+\begin{frame}{Evolución de LLM como Herramienta}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Modelos Fundacionales}
+      \begin{itemize}
+        \item Predicciones de texto
+        \item Limitaciones: falta de salidas estructuradas
+      \end{itemize}
+      \vspace{0.3cm}
+      \textbf{Chats LLM}
+      \begin{itemize}
+        \item Sigue instrucciones conversacionales
+        \item Limitaciones: propenso a alucinaciones, razonamiento limitado
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{LLM de Razonamiento}
+      \begin{itemize}
+        \item Procesa pasos de manera lógica
+        \item Limitaciones: alto costo computacional
+      \end{itemize}
+      \vspace{0.3cm}
+      \textbf{Agentes LLM}
+      \begin{itemize}
+        \item Detecta e integra conocimiento sobre herramientas externas
+        \item Limitaciones: complejidad en implementación
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ---- Slide 13 (imagen: tabla capacidades por tipo de LLM) ----
+\begin{frame}[plain]
+  \slideimg{slide-13.png}
+\end{frame}
+
+% ================= Sección: Antecedentes =================
+\section{IA generativa en imágenes (Antecedentes)}
+
+% ---- Slide 14 ----
+\begin{frame}{}
+  \centering
+  \Large IA generativa en imágenes\\ (Antecedentes)
+\end{frame}
+
+% ---- Slide 15 (imagen) ----
+\begin{frame}[plain]
+  \slideimg{slide-15.png}
+\end{frame}
+
+% ---- Slide 16 (imagen: referencia arxiv) ----
+\begin{frame}[plain]
+  \slideimg{slide-16.png}
+  \slidelink{https://arxiv.org/pdf/2502.08576}
+\end{frame}
+
+% ---- Slide 17 (imagen: referencia CVPR tutorial) ----
+\begin{frame}[plain]
+  \slideimg{slide-17.png}
+  \slidelink{https://cvpr2023-tutorial-diffusion-models.github.io/}
+\end{frame}
+
+% ---- Slide 18 (imagen: GAN) ----
+\begin{frame}[plain]
+  \slideimg{slide-18.png}
+\end{frame}
+
+% ---- Slide 19 (imagen) ----
+\begin{frame}[plain]
+  \slideimg{slide-19.png}
+\end{frame}
+
+% ---- Slide 20 (imagen: ImageGPT) ----
+\begin{frame}[plain]
+  \slideimg{slide-20.png}
+  \slidelink{https://openai.com/index/image-gpt/}
+\end{frame}
+
+% ---- Slide 21 (imagen: línea de tiempo Midjourney) ----
+\begin{frame}[plain]
+  \slideimg{slide-21.png}
+  \begin{center}
+    \tiny \url{https://twitter.com/chaseleantj/status/1738849384056733708} \quad
+    \url{https://storage.courtlistener.com/recap/gov.uscourts.cand.407208/gov.uscourts.cand.407208.129.10.pdf}
+  \end{center}
+\end{frame}
+
+% ================= Sección: Herramientas =================
+\section{Herramientas}
+
+% ---- Slide 22 ----
+\begin{frame}{}
+  \centering
+  \Large Herramientas
+\end{frame}
+
+% ---- Slide 23 (imagen: Fear Of Missing Out) ----
+\begin{frame}[plain]
+  \slideimg{slide-23.png}
+  \slidelink{https://x.com/defold/status/2069509784080884113}
+\end{frame}
+
+% ---- Slides 24-26 (imágenes) ----
+\begin{frame}[plain]
+  \slideimg{slide-24.png}
+\end{frame}
+
+\begin{frame}[plain]
+  \slideimg{slide-25.png}
+\end{frame}
+
+\begin{frame}[plain]
+  \slideimg{slide-26.png}
+\end{frame}
+
+% ---- Slide 27 (imagen: Google Flow Prompts) ----
+\begin{frame}[plain]
+  \slideimg{slide-27.png}
+  \slidelink{https://whiskailabs.net/google-flow-ai-prompts/}
+\end{frame}
+
+% ---- Slide 28 (imagen: Google Flow Tutorial) ----
+\begin{frame}[plain]
+  \slideimg{slide-28.png}
+  \slidelink{https://whiskailabs.net/google-flow-ai-tutorial/}
+\end{frame}
+
+% ---- Slide 29 (imagen: Prompting Guide) ----
+\begin{frame}[plain]
+  \slideimg{slide-29.png}
+  \slidelink{https://www.promptingguide.ai/introduction/examples}
+\end{frame}
+
+% ---- Slide 30 (imagen: Open Design) ----
+\begin{frame}[plain]
+  \slideimg{slide-30.png}
+  \slidelink{https://github.com/nexu-io/open-design}
+\end{frame}
+
+% ---- Slide 31 ----
+\begin{frame}{Comparativo de herramientas}
+  \small
+  \begin{table}
+    \begin{tabular}{lccccc}
+      \toprule
+       & \href{https://x.com/claudeai/status/2045156267690213649}{Claude Design} & Figma & Lovable/v0/Bolt & Open Design \\
+      \midrule
+      Open source & \ding{55} & \ding{55} & \ding{55} & \ding{51}\ Apache-2.0 \\
+      Self-host / desktop & \ding{55} & \ding{55} & \ding{55} & \ding{51}\ macOS+Windows+Vercel \\
+      Agent-native (CLI) & Anthropic only & \ding{55} & Cloud agent only & \ding{51}\ 22 CLIs + BYOK \\
+      Brand-grade DESIGN.md & Propietario & Theme JSON & Tokens limitados & \ding{51}\ 150 sistemas \\
+      Skills / plugins / templates & Cerrado & Plugin store & Cerrado & \ding{51}\ 100+ skills, 261 plugins \\
+      HyperFrames (HTML$\to$MP4) & \ding{55} & \ding{55} & \ding{55} & \ding{51}\ First-class \\
+      Refresh de repo a marca & \ding{55} & \ding{55} & \ding{55} & \ding{51}\ vía agente + DESIGN.md \\
+      Facturación mínima & Pro/Max/Team & Pro/Org & Pro/Team & BYOK \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+% ---- Slide 32 (imagen) ----
+\begin{frame}[plain]
+  \slideimg{slide-32.png}
+  \slidelink{https://deepmind.google/blog/sima-2-an-agent-that-plays-reasons-and-learns-with-you-in-virtual-3d-worlds/}
+\end{frame}
+
+% ---- Slide 33 (imagen + video) ----
+\begin{frame}[plain]
+  \slideimg{slide-33.png}
+  \begin{center}
+    \tiny Video: \url{https://cubepart.github.io/static/videos/summary.mp4}
+  \end{center}
+\end{frame}
+
+% ================= Sección: Casos especiales =================
+\section{Casos especiales}
+
+% ---- Slide 34 ----
+\begin{frame}{}
+  \centering
+  \Large Casos especiales
+\end{frame}
+
+% ---- Slide 35 (imagen: NeRF) ----
+\begin{frame}[plain]
+  \slideimg{slide-35.png}
+\end{frame}
+
+% ---- Slide 36 (imagen: SAM 3D) ----
+\begin{frame}[plain]
+  \slideimg{slide-36.png}
+  \slidelink{https://ai.meta.com/blog/sam-3d/}
+\end{frame}
+
+% ---- Slide 37 (video) ----
+\begin{frame}[plain]
+  \slideimg{slide-37.png}
+  \begin{center}
+    \tiny Video: \url{https://youtu.be/_pq0d1oxtA0}
+  \end{center}
+\end{frame}
+
+% ---- Slide 38 (video) ----
+\begin{frame}[plain]
+  \slideimg{slide-38.png}
+  \begin{center}
+    \tiny Video: \url{https://www.youtube.com/live/2SnyV0nNOtc} (t=1058)
+  \end{center}
+\end{frame}
+
+% ================= Sección: Errores, ataques y desempeño =================
+\section{Errores, ataques y desempeño}
+
+% ---- Slide 39 ----
+\begin{frame}{}
+  \centering
+  \Large Errores, ataques y desempeño
+\end{frame}
+
+% ---- Slide 40 (imagen: Errores tempranos) ----
+\begin{frame}[plain]
+  \slideimg{slide-40.png}
+\end{frame}
+
+% ---- Slide 41 (imagen) ----
+\begin{frame}[plain]
+  \slideimg{slide-41.png}
+  \slidelink{https://x.com/JulieKallini/status/1730725185379287545}
+\end{frame}
+
+% ---- Slide 42 (imagen: BioShocking attack) ----
+\begin{frame}[plain]
+  \slideimg{slide-42.png}
+  \slidelink{https://layerxsecurity.com/blog/bioshocking-ai-gaming-the-ai-browser-and-escaping-its-guardrails/}
+\end{frame}
+
+% ---- Slide 43 (imagen) ----
+\begin{frame}[plain]
+  \slideimg{slide-43.png}
+\end{frame}
+
+% ---- Slide 44 (imagen: persona indígena mexicana) ----
+\begin{frame}[plain]
+  \slideimg{slide-44.png}
+  \slidelink{https://www.flickr.com/photos/200715551@N08/albums/72177720317138505/}
+\end{frame}
+
+% ---- Slide 45 (imagen) ----
+\begin{frame}[plain]
+  \slideimg{slide-45.png}
+\end{frame}
+
+% ---- Slide 46 (imagen: chatbot fails) ----
+\begin{frame}[plain]
+  \slideimg{slide-46.png}
+  \slidelink{https://www.moin.ai/en/chatbot-wiki/chatbot-fails}
+\end{frame}
+
+% ================= Cierre =================
+\section{Conclusiones}
+
+% ---- Slide 47 ----
+\begin{frame}
+  \centering
+  \Huge ¡Gracias!
+\end{frame}
+
+\end{document}
