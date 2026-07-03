@@ -9,4 +9,4 @@ Repositorio donde guardo las presentaciones que comparto en charlas, talleres y 
 
 Cada carpeta incluye su propio `README.md` con instrucciones de compilación/uso cuando aplica.
 
-[Limk Colan](https://colab.research.google.com/drive/1Q4bxbhWCD-PoDb2inHJTbSmeSjc9g16L?usp=sharing)
+[Limk Colab](https://colab.research.google.com/drive/1Q4bxbhWCD-PoDb2inHJTbSmeSjc9g16L?usp=sharing)
