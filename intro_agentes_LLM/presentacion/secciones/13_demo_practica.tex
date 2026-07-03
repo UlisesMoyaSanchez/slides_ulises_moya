@@ -1,0 +1,47 @@
+% ============================================================
+% Sección 13: Puente a la demo práctica
+% ============================================================
+\section{Demo: un agente simple con LLM local}
+
+\begin{frame}{Lo que vamos a construir}
+  \begin{itemize}
+    \item Un agente \textbf{mínimo} corriendo 100\% local con
+      \href{https://ollama.com}{Ollama} — sin llaves de API, sin costo.
+    \item Tres herramientas simples: \texttt{calculadora}, \texttt{fecha\_actual},
+      \texttt{leer\_archivo}.
+    \item El ciclo \textbf{ReAct} que ya vimos, implementado en \textasciitilde100
+      líneas de Python: sin frameworks, para entender cada pieza.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Arquitectura de la demo}
+  \centering
+  \begin{tikzpicture}[node distance=1.4cm]
+    \node[cajaAgente] (user) {Pregunta del usuario};
+    \node[cajaLLM, below=of user] (ollama) {Ollama (modelo local)\\con tool-calling};
+    \node[cajaHerramienta, right=2.2cm of ollama] (tools) {calculadora\\fecha\_actual\\leer\_archivo};
+    \node[cajaAccento, below=of ollama] (resp) {Respuesta final};
+
+    \draw[flecha] (user) -- (ollama);
+    \draw[flechaDoble] (ollama) -- node[above, etiquetaFlecha]{tool call / resultado} (tools);
+    \draw[flecha] (ollama) -- (resp);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Dos formas de seguir la demo}
+  \begin{columns}
+    \column{0.5\textwidth}
+    \centering
+    \textbf{Script}\\[0.3em]
+    \texttt{codigo/agente\_simple.py}\\[0.5em]
+    \footnotesize Ejecución de principio a fin, para correr en terminal.
+    \column{0.5\textwidth}
+    \centering
+    \textbf{Notebook}\\[0.3em]
+    \texttt{notebook/agente\_llm\_local.ipynb}\\[0.5em]
+    \footnotesize Celda por celda, con explicación antes de cada paso.
+  \end{columns}
+  \vfill
+  \centering
+  \Large Vamos al código.
+\end{frame}

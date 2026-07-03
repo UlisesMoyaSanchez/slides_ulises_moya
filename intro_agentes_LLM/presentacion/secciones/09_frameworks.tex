@@ -1,0 +1,62 @@
+% ============================================================
+% Sección 9: Frameworks de agentes (breve)
+% ============================================================
+\section{Frameworks de agentes}
+
+\begin{frame}{¿Para qué sirve un framework de agentes?}
+  \begin{itemize}
+    \item Resuelven en común: manejo de historial, parsing de tool calls,
+      loops de agente, memoria, orquestación multiagente.
+    \item No son estrictamente necesarios (un loop ReAct se puede escribir
+      a mano, como veremos en la demo) — pero ahorran trabajo repetitivo
+      en proyectos grandes.
+    \item Riesgo: añaden \textbf{abstracción y dependencias}; a veces
+      conviene empezar simple y adoptar un framework solo cuando se
+      necesita.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Panorama de frameworks (2026)}
+  \small
+  \begin{center}
+  \begin{tabular}{@{}p{2.6cm}p{5.6cm}@{}}
+    \toprule
+    \textbf{Framework} & \textbf{Enfoque principal} \\
+    \midrule
+    LangChain / LangGraph & Cadenas de LLM + grafos de estados explícitos para agentes complejos \\
+    CrewAI & Equipos de agentes con roles definidos (multiagente) \\
+    AutoGen / AG2 (Microsoft) & Conversaciones entre múltiples agentes \\
+    OpenAI Agents SDK & Agentes ligeros con \emph{handoffs} entre ellos \\
+    Claude Agent SDK & El mismo motor de agente detrás de Claude Code, reusable en tus apps \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{¿Framework o loop a mano?}
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[node distance=1cm]
+    \node[cajaAgente, minimum width=5cm] (simple) {Tarea simple, 1 agente, pocas herramientas};
+    \node[cajaHerramienta, below=of simple, minimum width=5cm] (mano) {$\to$ loop ReAct escrito a mano};
+    \node[cajaAccento, right=2.5cm of simple, minimum width=5cm] (compleja) {Multiagente, memoria persistente, orquestación};
+    \node[cajaLLM, below=of compleja, minimum width=5cm] (fw) {$\to$ framework (LangGraph, CrewAI...)};
+    \draw[flecha] (simple) -- (mano);
+    \draw[flecha] (compleja) -- (fw);
+  \end{tikzpicture}}
+  \vfill
+  \footnotesize En esta charla construimos el caso simple: entender el loop
+  antes de delegarlo a un framework.
+\end{frame}
+
+\begin{frame}{Protocolo común: Model Context Protocol (MCP)}
+  \begin{itemize}
+    \item Estándar abierto (Anthropic, 2024) para conectar un LLM con
+      \textbf{herramientas y fuentes de datos} de forma uniforme.
+    \item Antes: cada integración era un conector distinto por framework.
+    \item Con MCP: un servidor de herramientas puede usarse desde cualquier
+      cliente/agente compatible (Claude, editores, otros frameworks).
+    \item Ayuda a que el ecosistema de herramientas \textbf{no dependa de
+      un solo framework}.
+  \end{itemize}
+\end{frame}

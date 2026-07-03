@@ -1,0 +1,69 @@
+% ============================================================
+% Sección 4: Agente vs Agente LLM
+% ============================================================
+\section{Agente clásico vs. agente LLM}
+
+\begin{frame}{¿En qué se parecen?}
+  \begin{itemize}
+    \item Ambos siguen el ciclo \textbf{percibir $\to$ decidir $\to$ actuar}.
+    \item Ambos operan dentro de un entorno (juego, sistema operativo,
+      conversación, internet).
+    \item Ambos pueden mejorar con retroalimentación.
+  \end{itemize}
+  \vfill
+  \centering
+  \Large ¿Entonces qué cambia?
+\end{frame}
+
+\begin{frame}{Diagrama comparativo}
+  \centering
+  \begin{tikzpicture}[node distance=0.9cm]
+    % Agente clasico
+    \node[cajaBase, fill=colGris!15, minimum width=4.6cm] (titulo1) {\textbf{Agente clásico (RL)}};
+    \node[cajaAgente, below=of titulo1, minimum width=4.6cm] (pol) {Política $\pi(a|s)$\\aprendida por prueba/error};
+    \node[cajaEntorno, below=of pol, minimum width=4.6cm] (acc) {Acciones discretas\\predefinidas por el entorno};
+
+    % Agente LLM
+    \node[cajaBase, fill=colGris!15, right=2.2cm of titulo1, minimum width=4.6cm] (titulo2) {\textbf{Agente LLM}};
+    \node[cajaLLM, below=of titulo2, minimum width=4.6cm] (razon) {Razonamiento en lenguaje\\natural (chain-of-thought)};
+    \node[cajaHerramienta, below=of razon, minimum width=4.6cm] (tools) {Acciones = llamadas a\\herramientas/funciones};
+
+    \draw[flecha] (titulo1) -- (pol);
+    \draw[flecha] (pol) -- (acc);
+    \draw[flecha] (titulo2) -- (razon);
+    \draw[flecha] (razon) -- (tools);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Tabla comparativa}
+  \small
+  \begin{center}
+  \begin{tabular}{@{}p{3.1cm}p{4.1cm}p{4.1cm}@{}}
+    \toprule
+    & \textbf{Agente clásico (RL)} & \textbf{Agente LLM} \\
+    \midrule
+    Cómo decide & Política numérica aprendida & Razonamiento en lenguaje (prompt) \\
+    Cómo aprende & Prueba y error con recompensa & Preentrenado en texto + fine-tuning \\
+    Espacio de acciones & Fijo, definido por el entorno & Abierto: cualquier herramienta con schema \\
+    Adaptación a tareas nuevas & Requiere reentrenar & Cambia con el \emph{prompt}, sin reentrenar \\
+    Explicabilidad & Baja (pesos numéricos) & Alta (razona en texto legible) \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Entonces, ¿qué es un agente LLM?}
+  \definicion{Agente LLM}{
+    Un sistema en el que un modelo de lenguaje \textbf{decide qué hacer a
+    continuación} —incluyendo qué herramientas invocar y con qué
+    argumentos— de forma iterativa, usando su propio razonamiento en
+    lenguaje natural como ``memoria de trabajo'', hasta cumplir un objetivo.
+  }
+  \vfill
+  \begin{itemize}
+    \item El LLM cumple el rol de \textbf{política}: dado un estado
+      (contexto), produce una acción (texto, tool call).
+    \item Las \textbf{herramientas} amplían el entorno con el que puede
+      interactuar (buscar, ejecutar código, leer archivos...).
+  \end{itemize}
+\end{frame}

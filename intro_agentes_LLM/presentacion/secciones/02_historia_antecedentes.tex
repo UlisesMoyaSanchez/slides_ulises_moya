@@ -1,0 +1,98 @@
+% ============================================================
+% Sección 2: Antecedentes / historia
+% ============================================================
+\section{Antecedentes e historia}
+
+\begin{frame}{Línea de tiempo: de reglas a agentes que razonan}
+  \centering
+  \begin{tikzpicture}[
+      every node/.style={font=\scriptsize},
+      etapa/.style={align=center, text width=2.5cm, font=\scriptsize}
+    ]
+    \draw[flecha, line width=1pt] (0,0) -- (12,0);
+
+    \foreach \x/\lbl/\txt in {
+        0/{1950s-60s}/{Sistemas basados\\en reglas},
+        2.4/{1980s}/{Sistemas\\expertos},
+        4.8/{1990s}/{Agentes\\reactivos / RL\\tabular (Q-learning)},
+        7.2/{2013-2016}/{Deep RL\\(DQN, AlphaGo)},
+        9.6/{2017-2020}/{Transformers\\y LLMs (GPT)},
+        12/{2022-hoy}/{Agentes LLM\\(ReAct, tool use,\\multiagente)}
+      }{
+        \node[nodoTiempo] at (\x,0) {};
+        \node[etapa, above=0.3cm] at (\x,0.3) {\lbl};
+        \node[etapa] at (\x,-1.1) {\txt};
+      }
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Antes de los LLM: agentes simbólicos}
+  \begin{itemize}
+    \item \textbf{Sistemas expertos} (MYCIN, DENDRAL): reglas \texttt{si-entonces}
+      escritas a mano por expertos humanos.
+    \item \textbf{Planificación clásica} (STRIPS): buscar una secuencia de
+      acciones que lleve de un estado inicial a una meta.
+    \item \textbf{Agentes reactivos} (Brooks, robótica): sin representación
+      interna del mundo, solo estímulo-respuesta.
+    \item Limitación común: \textbf{frágiles} fuera del dominio para el que
+      fueron programados; no generalizan.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{El salto: aprendizaje y luego lenguaje}
+  \centering
+  \resizebox{!}{0.78\textheight}{%
+  \begin{tikzpicture}[node distance=0.9cm]
+    \node[cajaBase, fill=colGris!15] (a) {Reglas escritas a mano};
+    \node[cajaBase, fill=colSecundario!25, below=of a] (b) {Aprendizaje por refuerzo\\(la política se aprende)};
+    \node[cajaBase, fill=colLLM!30, below=of b] (c) {Modelos de lenguaje preentrenados\\(el conocimiento se aprende de texto)};
+    \node[cajaAgente, below=of c] (d) {Agente LLM\\(razona en lenguaje + usa herramientas)};
+    \draw[flecha] (a) -- (b);
+    \draw[flecha] (b) -- (c);
+    \draw[flecha] (c) -- (d);
+  \end{tikzpicture}}
+\end{frame}
+
+\begin{frame}{Hitos recientes que habilitaron los agentes LLM}
+  \small
+  \begin{itemize}
+    \item \textbf{2017} — \emph{Attention is All You Need}: arquitectura Transformer.
+    \item \textbf{2020-2022} — GPT-3, InstructGPT: LLMs que \emph{siguen instrucciones}.
+    \item \textbf{2022} — Paper \emph{ReAct}: intercalar razonamiento y acciones.
+    \item \textbf{2023} — Explosión de frameworks: LangChain, AutoGPT, BabyAGI.
+    \item \textbf{2024-2025} — Tool use nativo, MCP, modelos que ``razonan''
+      (o1, DeepSeek-R1), SDKs de agentes de los propios labs.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Evolución de LLM como Herramienta}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Modelos Fundacionales}
+      \begin{itemize}
+        \item Predicciones de texto
+        \item Limitaciones: falta de salidas estructuradas
+      \end{itemize}
+      \vspace{0.3cm}
+      \textbf{Chats LLM}
+      \begin{itemize}
+        \item Sigue instrucciones conversacionales
+        \item Limitaciones: propenso a alucinaciones, razonamiento limitado
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \textbf{LLM de Razonamiento}
+      \begin{itemize}
+        \item Procesa pasos de manera lógica
+        \item Limitaciones: alto costo computacional
+      \end{itemize}
+      \vspace{0.3cm}
+      \textbf{Agentes LLM}
+      \begin{itemize}
+        \item Detecta e integra conocimiento sobre herramientas externas
+        \item Limitaciones: complejidad en implementación
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+

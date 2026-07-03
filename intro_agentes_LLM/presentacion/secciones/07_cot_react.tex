@@ -1,0 +1,97 @@
+% ============================================================
+% Sección 7: Chain-of-Thought y ReAct
+% ============================================================
+\section{Chain-of-Thought y ReAct}
+
+\begin{frame}{Chain-of-Thought (CoT)}
+  \definicion{Chain-of-Thought}{
+    Técnica de \emph{prompting} donde se pide (o se induce) al modelo a
+    escribir su \textbf{razonamiento paso a paso} antes de dar la respuesta
+    final, en lugar de responder directo.
+  }
+  \vfill
+  \begin{itemize}
+    \item Simple de aplicar: basta agregar ``pensemos paso a paso''\, al prompt.
+    \item Mejora notablemente el desempeño en tareas de \textbf{lógica,
+      matemáticas y problemas de varios pasos}.
+    \item Es la base conceptual de los modelos ``que razonan''\ (sección anterior).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{CoT en un diagrama}
+  \centering
+  \begin{tikzpicture}[node distance=0.5cm]
+    \node[cajaAgente] (p) {Pregunta};
+    \node[cajaLLM, below=of p, minimum width=6cm, minimum height=1.6cm] (r) {
+      \begin{minipage}{5.4cm}\scriptsize
+        \textbf{Razonamiento:} ``Primero calculo X, luego uso ese valor
+        para obtener Y, y con eso...''
+      \end{minipage}};
+    \node[cajaAccento, below=of r] (a) {Respuesta final};
+    \draw[flecha] (p) -- (r);
+    \draw[flecha] (r) -- (a);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize CoT es puro \emph{razonamiento en texto} — todavía no
+  interactúa con el mundo exterior.
+\end{frame}
+
+\begin{frame}{La limitación de CoT}
+  \begin{itemize}
+    \item CoT razona muy bien \textbf{sobre lo que ya sabe}.
+    \item Pero no puede verificar hechos, hacer cálculos exactos grandes,
+      ni consultar información nueva — solo ``piensa en voz alta''.
+    \item ¿Qué pasa si el razonamiento necesita un dato externo
+      (una búsqueda, un cálculo, un archivo)?
+  \end{itemize}
+  \vfill
+  \centering
+  \Large $\Rightarrow$ ReAct
+\end{frame}
+
+\begin{frame}{ReAct: Reasoning + Acting}
+  \definicion{ReAct (Yao et al., 2022)}{
+    Intercalar pasos de \textbf{razonamiento} (Thought) con pasos de
+    \textbf{acción} (Action) sobre herramientas externas, observando el
+    resultado (Observation) antes de continuar razonando.
+  }
+  \vfill
+  \small
+  \texttt{Thought} $\to$ \texttt{Action} $\to$ \texttt{Observation} $\to$
+  \texttt{Thought} $\to$ \dots $\to$ \texttt{Respuesta final}
+\end{frame}
+
+\begin{frame}{El loop ReAct}
+  \centering
+  \begin{tikzpicture}[node distance=1.1cm]
+    \node[cajaLLM] (t) {\textbf{Thought}\\¿qué necesito hacer?};
+    \node[cajaHerramienta, right=1.8cm of t] (a) {\textbf{Action}\\llamar herramienta};
+    \node[cajaEntorno, below=of a] (o) {\textbf{Observation}\\resultado obtenido};
+    \node[cajaLLM, below=of t] (t2) {\textbf{Thought}\\¿ya tengo la respuesta?};
+
+    \draw[flecha] (t) -- (a);
+    \draw[flecha] (a) -- (o);
+    \draw[flecha] (o) -- (t2);
+    \draw[flecha] (t2.west) to[out=180,in=180,looseness=1.3] node[left, etiquetaFlecha, align=center]{repetir\\si falta info} (t.west);
+    \node[cajaAccento, below=of t2] (fin) {Respuesta final};
+    \draw[flecha] (t2) -- node[right, etiquetaFlecha]{si ya alcanza} (fin);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Ejemplo de traza ReAct}
+  \footnotesize
+  \begin{block}{Pregunta}
+    ``¿Qué día de la semana cae el 25 de diciembre de este año, y a cuánto
+    equivale en horas si faltan 40 días?''
+  \end{block}
+  \begin{itemize}
+    \item \texttt{Thought}: necesito saber la fecha de hoy.
+    \item \texttt{Action}: \texttt{fecha\_actual()}
+    \item \texttt{Observation}: \texttt{"2026-07-02"}
+    \item \texttt{Thought}: ahora calculo los días restantes y la conversión.
+    \item \texttt{Action}: \texttt{calculadora("40 * 24")}
+    \item \texttt{Observation}: \texttt{960}
+    \item \texttt{Thought}: ya puedo responder.
+    \item \textbf{Respuesta final}: ``Faltan 960 horas; el 25 de diciembre es viernes.''
+  \end{itemize}
+\end{frame}

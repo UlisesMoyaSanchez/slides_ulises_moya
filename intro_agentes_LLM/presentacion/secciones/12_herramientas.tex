@@ -1,0 +1,61 @@
+% ============================================================
+% Sección 12: Herramientas de agentes
+% ============================================================
+\section{Herramientas de agentes}
+
+\begin{frame}{¿Qué es una ``herramienta'' para un LLM?}
+  \definicion{Tool / function calling}{
+    Una función externa que el LLM puede invocar, descrita mediante un
+    \textbf{schema} (nombre, descripción, parámetros) que el modelo usa
+    para decidir cuándo y cómo llamarla.
+  }
+  \vfill
+  \begin{itemize}
+    \item El LLM \textbf{no ejecuta la función}: solo genera la
+      \emph{intención} de llamarla (nombre + argumentos en JSON).
+    \item El programa que envuelve al LLM es quien \textbf{ejecuta} la
+      función real y le devuelve el resultado.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Anatomía de un tool schema}
+  \footnotesize
+\begin{verbatim}
+{
+  "name": "calculadora",
+  "description": "Evalua una expresion aritmetica",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "expresion": {"type": "string"}
+    },
+    "required": ["expresion"]
+  }
+}
+\end{verbatim}
+  \vfill
+  \normalsize El modelo elige el nombre y llena los parámetros; tu código
+  ejecuta \texttt{calculadora(expresion="3*7")}.
+\end{frame}
+
+\begin{frame}{Categorías de herramientas comunes}
+  \small
+  \begin{itemize}
+    \item \textbf{Cómputo}: calculadora, intérprete de código (Python, SQL).
+    \item \textbf{Información}: búsqueda web, RAG sobre documentos, APIs.
+    \item \textbf{Sistema de archivos}: leer/escribir/editar archivos.
+    \item \textbf{Acciones externas}: enviar correos, crear tickets, llamar APIs de terceros.
+    \item \textbf{Memoria}: guardar/recuperar notas entre sesiones.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{MCP: estandarizando las herramientas}
+  \begin{itemize}
+    \item \textbf{Model Context Protocol}: un servidor MCP expone un set de
+      herramientas de forma estándar, consumible por cualquier cliente compatible.
+    \item Ventaja: escribes la herramienta \textbf{una vez}, se conecta a
+      Claude, a un IDE, o a cualquier agente que hable MCP.
+    \item Es el equivalente a lo que USB hizo con los periféricos: un
+      conector común en vez de uno distinto por dispositivo.
+  \end{itemize}
+\end{frame}

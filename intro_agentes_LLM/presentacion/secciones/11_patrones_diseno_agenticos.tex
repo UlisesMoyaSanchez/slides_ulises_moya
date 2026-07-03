@@ -1,0 +1,93 @@
+% ============================================================
+% Sección 11: Patrones de diseño agénticos
+% ============================================================
+\section{Patrones de diseño agénticos}
+
+\begin{frame}{Cuatro patrones recurrentes}
+  \begin{enumerate}
+    \item \textbf{Reflection} (auto-crítica)
+    \item \textbf{Planning} (planeación)
+    \item \textbf{Tool use} (uso de herramientas)
+    \item \textbf{Multi-agent collaboration} (colaboración multiagente)
+  \end{enumerate}
+  \vfill
+  \footnotesize Popularizados por Andrew Ng / DeepLearning.AI como los
+  bloques básicos con los que se construye casi cualquier sistema agéntico.
+\end{frame}
+
+\begin{frame}{Patrón: Reflection}
+  \centering
+  \begin{tikzpicture}[node distance=1.4cm]
+    \node[cajaLLM] (gen) {Generar respuesta/borrador};
+    \node[cajaAccento, right=2.2cm of gen] (crit) {Autocriticar\\(el mismo u otro LLM)};
+    \node[cajaAgente, below=of gen] (fin) {Versión mejorada};
+    \draw[flecha] (gen) -- (crit);
+    \draw[flecha] (crit) -- node[right, etiquetaFlecha]{feedback} (fin);
+    \draw[flechaPunteada] (fin.west) to[out=180,in=180, looseness=1.2] (gen.west);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize El agente revisa su propio trabajo antes de entregarlo —
+  como un borrador y su edición.
+\end{frame}
+
+\begin{frame}{Patrón: Planning}
+  \centering
+  \resizebox{!}{0.58\textheight}{%
+  \begin{tikzpicture}[node distance=0.7cm]
+    \node[cajaAgente] (obj) {Objetivo complejo};
+    \node[cajaLLM, below=of obj] (plan) {Descomponer en subtareas};
+    \node[cajaHerramienta, below=of plan] (s1) {Subtarea 1 $\to$ 2 $\to$ 3 \dots};
+    \node[cajaAccento, below=of s1] (fin) {Ejecutar y combinar};
+    \draw[flecha] (obj) -- (plan);
+    \draw[flecha] (plan) -- (s1);
+    \draw[flecha] (s1) -- (fin);
+  \end{tikzpicture}}
+  \vfill
+  \footnotesize El agente traza un plan \emph{antes} de actuar, en vez de
+  improvisar acción por acción.
+\end{frame}
+
+\begin{frame}{Patrón: Tool use}
+  \centering
+  \begin{tikzpicture}[node distance=1.6cm]
+    \node[cajaLLM] (llm) {LLM};
+    \node[cajaHerramienta, above right=0.8cm and 2cm of llm] (t1) {Calculadora};
+    \node[cajaHerramienta, right=2cm of llm] (t2) {Buscador};
+    \node[cajaHerramienta, below right=0.8cm and 2cm of llm] (t3) {Ejecutor de código};
+    \draw[flechaDoble] (llm) -- (t1);
+    \draw[flechaDoble] (llm) -- (t2);
+    \draw[flechaDoble] (llm) -- (t3);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize El patrón que ya vimos en RAG y ReAct: el LLM decide
+  \emph{cuándo} y \emph{con qué argumentos} invocar cada herramienta.
+\end{frame}
+
+\begin{frame}{Patrón: Multi-agent collaboration}
+  \centering
+  \footnotesize Ya visto en la sección anterior: orquestador-trabajadores,
+  pipeline, debate.
+  \vfill
+  \begin{itemize}
+    \item Se combina con los otros tres: cada agente puede tener su propio
+      ciclo de \emph{planning + tool use + reflection}.
+    \item Es el patrón de \textbf{mayor nivel}: compone a los demás.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Los cuatro patrones combinados}
+  \centering
+  \resizebox{0.8\textwidth}{0.48\textheight}{%
+  \begin{tikzpicture}[node distance=0.9cm]
+    \node[cajaBase, fill=colGris!15, minimum width=8.5cm] (top) {\textbf{Multi-agent collaboration}};
+    \node[cajaAgente, below=of top, minimum width=2.5cm] (p1) {Planning};
+    \node[cajaHerramienta, right=0.4cm of p1, minimum width=2.5cm] (p2) {Tool use};
+    \node[cajaAccento, right=0.4cm of p2, minimum width=2.5cm] (p3) {Reflection};
+    \draw[flecha] (top.south) -- ++(0,-0.3) -| (p1.north);
+    \draw[flecha] (top.south) -- (p2.north);
+    \draw[flecha] (top.south) -- ++(0,-0.3) -| (p3.north);
+  \end{tikzpicture}}
+  \vfill
+  \footnotesize En la práctica, un buen agente combina varios de estos
+  patrones a la vez, no uno solo.
+\end{frame}

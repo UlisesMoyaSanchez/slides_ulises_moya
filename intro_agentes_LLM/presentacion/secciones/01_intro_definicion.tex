@@ -1,0 +1,67 @@
+% ============================================================
+% Sección 1: Definición de agente
+% ============================================================
+\section{¿Qué es un agente?}
+
+\begin{frame}{Una pregunta antes de empezar}
+  \centering
+  \Large
+  ¿Qué tienen en común un termostato, \\
+  un jugador de ajedrez artificial \\
+  y ChatGPT usando un navegador?
+  \vfill
+  \normalsize
+  \pause
+  Los tres pueden describirse como \textbf{agentes}.
+\end{frame}
+
+\begin{frame}{Definición de agente}
+  \definicion{Agente (Russell \& Norvig)}{
+    Un agente es cualquier entidad que \textbf{percibe} su entorno a través
+    de sensores y \textbf{actúa} sobre ese entorno a través de actuadores,
+    con el fin de alcanzar un objetivo.
+  }
+  \vfill
+  \begin{itemize}
+    \item No requiere ``inteligencia''\, para ser agente: un termostato ya califica.
+    \item Lo que lo hace \emph{interesante} es qué tan racional es su
+      comportamiento frente al objetivo.
+    \item Un \textbf{agente racional} elige, en cada instante, la acción que
+      maximiza su desempeño esperado dado lo que ha percibido.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{El ciclo agente–entorno}
+  \centering
+  \begin{tikzpicture}[node distance=2.2cm]
+    \node[cajaAgente, minimum width=3.2cm, minimum height=1.6cm] (agente) {\textbf{AGENTE}\\[2pt]\footnotesize función/política};
+    \node[cajaEntorno, minimum width=3.2cm, minimum height=1.6cm, right=4cm of agente] (entorno) {\textbf{ENTORNO}\\[2pt]\footnotesize mundo, tarea, usuario};
+
+    \draw[flecha] (agente.30) -- ++(1.9,0) node[midway, above, etiquetaFlecha]{acción $a_t$} -- (entorno.150);
+    \draw[flecha] (entorno.210) -- ++(-1.9,0) node[midway, below, etiquetaFlecha]{percepción $s_{t+1}$, recompensa $r_t$} -- (agente.-30);
+  \end{tikzpicture}
+
+  \vfill
+  \begin{itemize}
+    \item Sensores $\to$ estado percibido.
+    \item Programa/política del agente $\to$ decide la acción.
+    \item Actuadores $\to$ ejecutan la acción sobre el entorno.
+    \item El entorno cambia, y el ciclo se repite.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Tipos clásicos de agentes (según su arquitectura)}
+  \small
+  \begin{itemize}
+    \item \textbf{Reactivo simple}: regla condición-acción, sin memoria (termostato).
+    \item \textbf{Basado en modelo}: mantiene un estado interno del mundo.
+    \item \textbf{Basado en objetivos}: elige acciones que acercan a una meta.
+    \item \textbf{Basado en utilidad}: pondera múltiples objetivos en conflicto.
+    \item \textbf{Que aprende}: mejora su política con la experiencia (RL).
+  \end{itemize}
+  \vfill
+  \begin{alertblock}{Adelanto}
+    Un \textbf{agente LLM} añade una capa nueva: usa lenguaje natural como
+    espacio de razonamiento interno, no solo como entrada/salida.
+  \end{alertblock}
+\end{frame}

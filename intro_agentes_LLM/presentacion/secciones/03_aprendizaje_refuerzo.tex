@@ -1,0 +1,84 @@
+% ============================================================
+% Sección 3: Aprendizaje por refuerzo
+% ============================================================
+\section{Aprendizaje por refuerzo}
+
+\begin{frame}{¿Por qué hablar de RL en una charla de agentes LLM?}
+  \begin{itemize}
+    \item La palabra ``agente'' viene formalmente del \textbf{aprendizaje por
+      refuerzo} (Reinforcement Learning, RL).
+    \item RL es el marco matemático donde un agente aprende \emph{qué acción
+      tomar} para maximizar una recompensa acumulada.
+    \item Los LLMs modernos se afinan con una variante de RL
+      (\textbf{RLHF}) — por eso el vocabulario de ``agente'', ``política''
+      y ``recompensa'' reaparece constantemente.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{El ciclo de RL}
+  \centering
+  \resizebox{!}{0.4\textheight}{%
+  \begin{tikzpicture}[node distance=2.2cm]
+    \node[cajaAgente, minimum width=3cm, minimum height=1.5cm] (agente) {\textbf{Agente}\\[2pt]\footnotesize política $\pi(a\mid s)$};
+    \node[cajaEntorno, minimum width=3cm, minimum height=1.5cm, right=4.2cm of agente] (entorno) {\textbf{Entorno}};
+
+    \draw[flecha] (agente.20) -- ++(2.2,0) node[midway, above, etiquetaFlecha]{acción $a_t$} -- (entorno.160);
+    \draw[flecha] (entorno.200) -- ++(-2.2,0) node[midway, below, etiquetaFlecha]{estado $s_{t+1}$} -- (agente.-20);
+    \draw[flecha] (entorno.-90) to[out=-90, in=-90, looseness=1.4]
+      node[midway, below, etiquetaFlecha]{recompensa $r_t$} (agente.-90);
+  \end{tikzpicture}}
+  \vfill
+  \begin{itemize}
+    \item El agente busca la política $\pi$ que \textbf{maximiza la suma de
+      recompensas} esperadas a largo plazo.
+    \item Aprende por \textbf{prueba y error}: explora, observa el resultado,
+      ajusta su política.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ingredientes de un problema de RL}
+  \small
+  \begin{itemize}
+    \item \textbf{Estado ($s$)}: descripción de la situación actual.
+    \item \textbf{Acción ($a$)}: algo que el agente puede hacer.
+    \item \textbf{Recompensa ($r$)}: señal numérica de qué tan buena fue la acción.
+    \item \textbf{Política ($\pi$)}: la estrategia que mapea estados a acciones.
+    \item \textbf{Valor ($V$, $Q$)}: qué tan bueno es un estado (o par estado-acción)
+      a largo plazo.
+  \end{itemize}
+  \vfill
+  \begin{exampleblock}{Ejemplo clásico}
+    Un agente que juega Atari: estado = píxeles de la pantalla, acción =
+    mover el joystick, recompensa = puntaje del juego.
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}{De Q-learning a Deep RL}
+  \begin{itemize}
+    \item \textbf{Q-learning tabular}: guarda una tabla de valores
+      $Q(s,a)$ — solo funciona con pocos estados posibles.
+    \item \textbf{Deep RL} (DQN, PPO, etc.): una red neuronal
+      \emph{aproxima} $Q$ o $\pi$ directamente — escala a espacios enormes
+      (imágenes, texto).
+    \item Hitos: \textbf{DQN} (Atari, 2013), \textbf{AlphaGo/AlphaZero}
+      (2016-2017), \textbf{OpenAI Five}, \textbf{PPO} (algoritmo detrás de RLHF).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{El puente hacia los LLM: RLHF}
+  \centering
+  \resizebox{!}{0.62\textheight}{%
+  \begin{tikzpicture}[node distance=0.9cm]
+    \node[cajaLLM] (modelo) {LLM preentrenado};
+    \node[cajaHerramienta, below=of modelo] (sft) {Ajuste supervisado\\(ejemplos humanos)};
+    \node[cajaAgente, below=of sft] (rm) {Modelo de recompensa\\(aprende preferencias humanas)};
+    \node[cajaAccento, below=of rm] (ppo) {RL (PPO) contra\\el modelo de recompensa};
+    \draw[flecha] (modelo) -- (sft);
+    \draw[flecha] (sft) -- (rm);
+    \draw[flecha] (rm) -- (ppo);
+  \end{tikzpicture}}
+  \vfill
+  \small
+  \textbf{RLHF} = \emph{Reinforcement Learning from Human Feedback}. Aquí el
+  ``agente'' es el propio LLM y la ``recompensa'' viene de preferencias humanas.
+\end{frame}

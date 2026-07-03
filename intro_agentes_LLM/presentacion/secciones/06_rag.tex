@@ -1,0 +1,101 @@
+% ============================================================
+% Sección 6: RAG
+% ============================================================
+\section{RAG: Retrieval-Augmented Generation}
+
+\begin{frame}{El problema que resuelve RAG}
+  \begin{itemize}
+    \item Un LLM solo ``sabe'' lo que vio en su entrenamiento: conocimiento
+      \textbf{congelado en el tiempo} y sin datos privados/internos.
+    \item Alternativas para darle información nueva:
+      \begin{enumerate}
+        \item Reentrenar/afinar el modelo (caro, lento).
+        \item Meter todo en el prompt (no escala, límite de contexto).
+        \item \textbf{RAG}: buscar solo lo relevante y ponerlo en el prompt.
+      \end{enumerate}
+  \end{itemize}
+  \vfill
+  \definicion{RAG}{
+    Recuperar información relevante de una fuente externa \emph{en el
+    momento de la consulta} y dársela al LLM como contexto para generar
+    la respuesta.
+  }
+\end{frame}
+
+\begin{frame}{Pipeline de RAG}
+  \centering
+  \begin{tikzpicture}[node distance=1.5cm, every node/.style={font=\small}]
+    \node[cajaAgente] (q) {Pregunta\\del usuario};
+    \node[cajaLLM, right=of q] (emb) {Modelo de\\embeddings};
+    \node[cajaHerramienta, right=of emb] (db) {Base vectorial\\(documentos)};
+    \node[cajaEntorno, below=of db] (ctx) {Fragmentos\\relevantes};
+    \node[cajaLLM, below=of emb] (llm) {LLM};
+    \node[cajaAccento, below=of q] (resp) {Respuesta\\final};
+
+    \draw[flecha] (q) -- (emb);
+    \draw[flecha] (emb) -- node[above, etiquetaFlecha]{vector consulta} (db);
+    \draw[flecha] (db) -- node[right, etiquetaFlecha]{top-$k$ similares} (ctx);
+    \draw[flecha] (ctx) -- (llm);
+    \draw[flecha] (q) to[bend left=15] (llm);
+    \draw[flecha] (llm) -- (resp);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize La pregunta viaja por dos caminos: se usa para \textbf{buscar}
+  y se usa (junto al contexto recuperado) para \textbf{generar} la respuesta.
+\end{frame}
+
+\begin{frame}{¿Qué es un embedding, en una frase?}
+  \definicion{Embedding}{
+    Un vector de números que representa el \emph{significado} de un texto,
+    de forma que textos con significado parecido quedan cerca en ese
+    espacio vectorial.
+  }
+  \vfill
+  \begin{itemize}
+    \item Se indexan todos los documentos (o fragmentos/\emph{chunks}) como
+      embeddings en una \textbf{base vectorial} (FAISS, Chroma, pgvector...).
+    \item En consulta: se calcula el embedding de la pregunta y se busca por
+      \textbf{similitud} (coseno) los fragmentos más cercanos.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Ejemplo 1: asistente sobre documentación interna}
+  \small
+  \begin{enumerate}
+    \item Se indexan los manuales/wiki de la empresa en chunks de \textasciitilde500 tokens.
+    \item Usuario pregunta: \emph{``¿Cuántos días de vacaciones tengo el primer año?''}
+    \item Se recuperan los 3 fragmentos del manual de RR.HH. más relevantes.
+    \item El LLM responde \textbf{citando} esos fragmentos, sin inventar la política.
+  \end{enumerate}
+  \vfill
+  \begin{alertblock}{Por qué importa}
+    Sin RAG, el modelo alucinaría una cifra genérica; con RAG, responde con
+    la política \emph{real} de la empresa.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Ejemplo 2: RAG dentro de un agente}
+  \small
+  \begin{enumerate}
+    \item El agente recibe: \emph{``Resume los cambios de la última versión
+      de nuestra librería''}.
+    \item El agente decide llamar a la herramienta \texttt{buscar\_docs(query)}.
+    \item La herramienta hace la recuperación (RAG) y devuelve fragmentos del changelog.
+    \item El agente redacta el resumen usando esos fragmentos como evidencia.
+  \end{enumerate}
+  \vfill
+  RAG aquí \textbf{no es un paso fijo}: es una herramienta más que el agente
+  decide usar cuando la necesita.
+\end{frame}
+
+\begin{frame}{Retos comunes de RAG}
+  \begin{itemize}
+    \item \textbf{Chunking}: fragmentos muy grandes pierden precisión, muy
+      chicos pierden contexto.
+    \item \textbf{Recuperación pobre} = respuesta pobre, aunque el LLM sea excelente.
+    \item Combinar búsqueda \textbf{semántica + por palabras clave} (\emph{hybrid search})
+      suele dar mejores resultados.
+    \item \emph{Re-ranking}: recuperar más candidatos y luego reordenar los
+      mejores con un modelo más preciso (y más caro).
+  \end{itemize}
+\end{frame}

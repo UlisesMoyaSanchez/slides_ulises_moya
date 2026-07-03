@@ -1,0 +1,77 @@
+% ============================================================
+% Sección 10: Sistemas multiagente
+% ============================================================
+\section{Sistemas multiagente}
+
+\begin{frame}{¿Por qué usar varios agentes?}
+  \begin{itemize}
+    \item Un solo agente con demasiadas responsabilidades tiende a
+      \textbf{perder foco} (contexto saturado, instrucciones contradictorias).
+    \item Dividir el trabajo entre agentes \textbf{especializados}
+      —cada uno con su propio prompt, herramientas y contexto— suele dar
+      mejores resultados en tareas grandes.
+    \item Costo: más complejidad, más latencia, más tokens.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Topología 1: orquestador–trabajadores}
+  \centering
+  \begin{tikzpicture}[node distance=1.6cm]
+    \node[cajaAccento] (orq) {Orquestador};
+    \node[cajaAgente, below left=1.4cm and 1.6cm of orq] (w1) {Trabajador 1};
+    \node[cajaAgente, below=1.6cm of orq] (w2) {Trabajador 2};
+    \node[cajaAgente, below right=1.4cm and 1.6cm of orq] (w3) {Trabajador 3};
+    \draw[flecha] (orq) -- (w1);
+    \draw[flecha] (orq) -- (w2);
+    \draw[flecha] (orq) -- (w3);
+    \draw[flechaPunteada] (w1) to[bend right=15] (orq);
+    \draw[flechaPunteada] (w3) to[bend left=15] (orq);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize Un agente central descompone la tarea, la reparte y
+  \textbf{combina los resultados}. Ideal cuando las subtareas son
+  independientes entre sí.
+\end{frame}
+
+\begin{frame}{Topología 2: pipeline secuencial}
+  \centering
+  \begin{tikzpicture}[node distance=1.8cm]
+    \node[cajaAgente] (a1) {Agente\\investigador};
+    \node[cajaAgente, right=of a1] (a2) {Agente\\redactor};
+    \node[cajaAgente, right=of a2] (a3) {Agente\\revisor};
+    \draw[flecha] (a1) -- (a2);
+    \draw[flecha] (a2) -- (a3);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize Cada agente recibe la salida del anterior como entrada.
+  Bueno para procesos con \textbf{etapas claras} (investigar $\to$ escribir
+  $\to$ corregir).
+\end{frame}
+
+\begin{frame}{Topología 3: colaborativa / debate}
+  \centering
+  \begin{tikzpicture}[node distance=2.4cm]
+    \node[cajaAgente] (a1) {Agente A};
+    \node[cajaAgente, right=of a1] (a2) {Agente B};
+    \node[cajaAccento, below=1.2cm of $(a1)!0.5!(a2)$] (j) {Juez / síntesis};
+    \draw[flechaDoble] (a1) -- (a2);
+    \draw[flecha] (a1) -- (j);
+    \draw[flecha] (a2) -- (j);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize Los agentes discuten/critican propuestas entre sí antes de
+  llegar a una respuesta final — útil para \textbf{decisiones que se
+  benefician de puntos de vista distintos}.
+\end{frame}
+
+\begin{frame}{Riesgos propios de multiagente}
+  \begin{itemize}
+    \item \textbf{Costos y latencia} se multiplican por cada agente involucrado.
+    \item \textbf{Errores en cascada}: un agente con información incorrecta
+      contamina a los que dependen de él.
+    \item Coordinación: decidir \emph{cuándo termina} cada agente y qué
+      formato usan para comunicarse entre sí.
+    \item Regla práctica: usar multiagente solo cuando un solo agente
+      \textbf{ya demostró} no ser suficiente.
+  \end{itemize}
+\end{frame}

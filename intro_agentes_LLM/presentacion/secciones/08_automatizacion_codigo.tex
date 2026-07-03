@@ -1,0 +1,73 @@
+% ============================================================
+% Sección 8: Automatización de procesos de código
+% ============================================================
+\section{Automatizar procesos de código con agentes}
+
+\begin{frame}{De autocompletado a agente de código}
+  \begin{itemize}
+    \item \textbf{Autocompletado} (Copilot clásico): sugiere la siguiente
+      línea, el humano decide todo lo demás.
+    \item \textbf{Agente de código} (Claude Code, Cursor Agent, Devin...):
+      puede \emph{planear, escribir, ejecutar, ver el error y corregir} —
+      todo en un loop, con supervisión humana en distintos grados.
+    \item La diferencia clave: el agente tiene \textbf{herramientas} para
+      leer/escribir archivos y \textbf{ejecutar} lo que escribe.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{El loop generar-ejecutar-corregir}
+  \centering
+  \begin{tikzpicture}[node distance=1.2cm]
+    \node[cajaLLM] (gen) {Generar/editar código};
+    \node[cajaHerramienta, right=2cm of gen] (run) {Ejecutar\\(tests, linter, script)};
+    \node[cajaEntorno, below=of run] (obs) {Observar salida\\(error, stack trace)};
+    \node[cajaAccento, below=of gen] (fin) {¿Pasa? $\to$ Terminar};
+
+    \draw[flecha] (gen) -- (run);
+    \draw[flecha] (run) -- (obs);
+    \draw[flecha] (obs) -- node[below, etiquetaFlecha]{si falla, corregir} (gen);
+    \draw[flecha] (obs) -- node[right, etiquetaFlecha]{si pasa} (fin);
+  \end{tikzpicture}
+  \vfill
+  \footnotesize Este es, literalmente, ReAct aplicado a ingeniería de software:
+  \texttt{Thought} (qué cambiar) $\to$ \texttt{Action} (editar/ejecutar) $\to$
+  \texttt{Observation} (resultado).
+\end{frame}
+
+\begin{frame}{Ejemplos de tareas automatizables}
+  \small
+  \begin{itemize}
+    \item \textbf{Refactors mecánicos a escala}: renombrar una función y
+      actualizar todos sus usos en un repo grande.
+    \item \textbf{Corrección de bugs guiada por tests}: correr la suite,
+      leer el fallo, editar, repetir hasta que pase.
+    \item \textbf{Generación de código repetitivo}: boilerplate, migraciones,
+      adaptadores entre APIs.
+    \item \textbf{Revisión de código}: detectar bugs, sugerir simplificaciones
+      antes de mergear.
+    \item \textbf{Automatización de CI/CD}: diagnosticar por qué falló un
+      pipeline y proponer el fix.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Qué necesita un agente para hacer esto bien}
+  \begin{itemize}
+    \item Acceso de \textbf{lectura/escritura} al sistema de archivos.
+    \item Una forma de \textbf{ejecutar comandos} (shell, tests, build).
+    \item \textbf{Feedback verificable}: tests, linters, tipos — señales
+      objetivas de si el cambio funcionó (no solo ``se ve bien'').
+    \item \textbf{Límites y supervisión}: permisos, sandboxing, confirmación
+      humana en acciones riesgosas (borrar, hacer push, etc.).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Riesgos a tener en cuenta}
+  \begin{alertblock}{No es magia, hay que vigilarlo}
+    \begin{itemize}
+      \item Puede ``arreglar'' el síntoma y no la causa si el feedback es débil.
+      \item Puede ejecutar comandos destructivos si no hay barreras.
+      \item Requiere buen criterio sobre \textbf{qué automatizar sin supervisión}
+        y qué requiere aprobación humana explícita.
+    \end{itemize}
+  \end{alertblock}
+\end{frame}

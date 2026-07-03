@@ -1,0 +1,5 @@
+Este es un archivo de ejemplo para probar la herramienta leer_archivo
+del agente. Contiene texto simple sin ningún formato especial.
+
+El agente debería poder leer este archivo y resumir su contenido
+cuando se lo pidas usando la herramienta leer_archivo.

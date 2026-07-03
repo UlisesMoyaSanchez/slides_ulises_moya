@@ -1,0 +1,97 @@
+% ============================================================
+% Preambulo: tema, paquetes y estilos TikZ reutilizables
+% ============================================================
+
+\usepackage[spanish]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multicol}
+
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, shapes.symbols,
+                fit, backgrounds, calc, decorations.pathreplacing, chains,
+                shadows, mindmap}
+
+% ---------- Paleta institucional (IIEG) ----------
+\definecolor{grispizarra}{HTML}{465055}   % Color institucional dominante: barras, paneles, encabezados
+\definecolor{moradojalisco}{HTML}{6B2182} % Fondos de portada y separadores de sección
+\definecolor{naranjajalisco}{HTML}{FF8300}% Branding exclusivo: escudos, íconos, comillas decorativas
+\definecolor{grisclaro}{HTML}{F3F3F3}     % Fondo principal de slides de contenido
+\definecolor{grisperla}{HTML}{EEF2F3}     % Variante de fondo en slides especiales
+
+% ---------- Tema ----------
+\usetheme{Madrid}
+\usecolortheme{default}
+
+% ---- Aplicación de la paleta institucional al tema Madrid ----
+\setbeamercolor{palette primary}{bg=grispizarra,fg=white}
+\setbeamercolor{palette secondary}{bg=moradojalisco,fg=white}
+\setbeamercolor{palette tertiary}{bg=grispizarra,fg=white}
+\setbeamercolor{palette quaternary}{bg=moradojalisco,fg=white}
+\setbeamercolor{structure}{fg=moradojalisco}
+\setbeamercolor{title}{fg=white,bg=moradojalisco}
+\setbeamercolor{frametitle}{bg=grispizarra,fg=white}
+\setbeamercolor{section in head/foot}{bg=moradojalisco,fg=white}
+\setbeamercolor{author in head/foot}{bg=grispizarra,fg=white}
+\setbeamercolor{normal text}{fg=black}
+\setbeamercolor{block title}{bg=naranjajalisco,fg=black}
+\setbeamercolor{block body}{bg=grisperla,fg=black}
+\setbeamercolor{block title alerted}{bg=naranjajalisco,fg=black}
+\setbeamercolor{block body alerted}{bg=grisperla,fg=black}
+
+\setbeamertemplate{section in toc}[sections numbered]
+
+% Paleta de colores del deck, derivada de la paleta institucional
+% (se conservan los nombres usados en los diagramas TikZ de las secciones)
+\colorlet{colPrimario}{grispizarra}
+\colorlet{colSecundario}{moradojalisco}
+\colorlet{colGris}{grispizarra}
+\colorlet{colAgente}{moradojalisco}
+\colorlet{colEntorno}{grispizarra}
+\colorlet{colLLM}{naranjajalisco}
+\colorlet{colHerramienta}{naranjajalisco!55!moradojalisco}
+\colorlet{colAcento}{naranjajalisco!75!grispizarra}
+
+% ---------- Estilos TikZ reutilizables en todo el deck ----------
+\tikzset{
+  cajaBase/.style={
+    draw=colGris, thick, rounded corners=2pt,
+    minimum height=1cm, minimum width=2.4cm,
+    align=center, font=\small, text=colPrimario,
+    fill=white, drop shadow
+  },
+  cajaAgente/.style={cajaBase, fill=colAgente!35},
+  cajaEntorno/.style={cajaBase, fill=colEntorno!35},
+  cajaLLM/.style={cajaBase, fill=colLLM!30},
+  cajaHerramienta/.style={cajaBase, fill=colHerramienta!45},
+  cajaAccento/.style={cajaBase, fill=colAcento!35},
+  flecha/.style={-{Latex[length=2.2mm]}, thick, colGris},
+  flechaDoble/.style={{Latex[length=2.2mm]}-{Latex[length=2.2mm]}, thick, colGris},
+  flechaPunteada/.style={-{Latex[length=2.2mm]}, thick, dashed, colGris},
+  etiquetaFlecha/.style={font=\scriptsize\itshape, text=colGris, fill=white, inner sep=1pt},
+  nodoTiempo/.style={circle, draw=colSecundario, fill=colSecundario!25, thick,
+    minimum size=8pt, inner sep=0pt},
+}
+
+% Comando corto para bloques de definicion resaltados
+\newcommand{\definicion}[2]{%
+  \begin{alertblock}{#1}
+    #2
+  \end{alertblock}
+}
+
+\newcommand{\slideimg}[1]{%
+  \begin{center}
+    \includegraphics[width=0.95\paperwidth,height=0.78\paperheight,keepaspectratio]{images/#1}
+  \end{center}
+}
+\title{Agentes LLM}
+\subtitle{}
+\author{Ulises Moya}
+\institute{IIEG, TSJ-Mario Molina}
+\date{\today}
+\logo{\includegraphics[height=0.8cm]{images/iieg_logo.png}}
